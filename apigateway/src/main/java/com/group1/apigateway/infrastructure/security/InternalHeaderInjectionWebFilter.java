@@ -52,7 +52,9 @@ public class InternalHeaderInjectionWebFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
 
         if (!path.startsWith("/api/")
+                || path.contains("/public/")
                 || path.startsWith("/api/auth/")
+                || path.startsWith("/api/authentication-service/")
                 || path.startsWith("/api/auth-service/")) {
             return chain.filter(exchange);
         }

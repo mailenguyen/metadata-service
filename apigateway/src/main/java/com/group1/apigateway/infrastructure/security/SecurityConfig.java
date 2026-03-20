@@ -56,11 +56,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/api/auth/**").permitAll()
-                        .pathMatchers("/api/internal/echo/**").authenticated()
+                        .pathMatchers(
+                                "/api/auth/**",
+                                "/api/auth-service/**",
+                                "/api/authentication-service/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/*/public/**",
+                                "/api/public/**",
+                                "/api/*-service/public/**",
+                                "/api/*-service/*/public/**"
+                        ).permitAll()
+
                         .pathMatchers("/api/**").authenticated()
-                        .anyExchange().permitAll()
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2

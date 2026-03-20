@@ -6,6 +6,9 @@ spring:
   application:
     name: metadata-service
 
+  config:
+    import: optional:file:.env[.properties]
+
   data:
     redis:
       url: redis://default:ItRBEjljWMXDHICNFJdCxBTjGIHPmzMk@centerbeam.proxy.rlwy.net:25969
@@ -34,21 +37,33 @@ springdoc:
 eureka:
   client:
     service-url:
-      defaultZone: https://microservice-i7nc.onrender.com/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:https://microservice-i7nc.onrender.com/eureka/}
     fetch-registry: true
     register-with-eureka: true
+    healthcheck:
+      enabled: true
+    instance-info-replication-interval-seconds: 30
+    registry-fetch-interval-seconds: 10
 
   instance:
     prefer-ip-address: false
-    hostname: ${EUREKA_INSTANCE_HOSTNAME:7fc3-118-69-61-33.ngrok-free.app}
-    instance-id: ${spring.application.name}:${random.value}
-
+    hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
+    secure-port: 443
     secure-port-enabled: true
     non-secure-port-enabled: false
+    status-page-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/actuator/info
+    health-check-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/actuator/health
+    home-page-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    instance-id: ${spring.application.name}:${RENDER_EXTERNAL_HOSTNAME:localhost}
 
-    home-page-url: https://${eureka.instance.hostname}/
-    status-page-url: https://${eureka.instance.hostname}/actuator/info
-    health-check-url: https://${eureka.instance.hostname}/actuator/health
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:https://api-gate-way.onrender.com}
+
+rbp:
+  config: ${RBP_CONFIG:}
 
 metadata:
   key:
@@ -58,4 +73,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
